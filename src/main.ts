@@ -295,8 +295,10 @@ observer.observe(canvas);
 loadFonts()
   .catch(() => undefined)
   .finally(() => {
-    if (params.get("play") === "1") {
+    if (params.get("play") === "1" || params.get("shot") === "1") {
       curtain.hidden = true;
+    }
+    if (params.get("play") === "1") {
       playing = true;
       score.unlock();
     }

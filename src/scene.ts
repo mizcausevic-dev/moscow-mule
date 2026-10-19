@@ -59,13 +59,13 @@ const PORT: Layout = {
 };
 
 const CUBES = [
-  { ox: -0.32, oy: 0.12, rot: -0.22, size: 82 },
-  { ox: 0.3, oy: 0.1, rot: 0.16, size: 90 },
-  { ox: 0.0, oy: 0.14, rot: 0.04, size: 74 },
-  { ox: -0.28, oy: 0.32, rot: 0.26, size: 76 },
-  { ox: 0.26, oy: 0.34, rot: -0.18, size: 84 },
-  { ox: -0.06, oy: 0.52, rot: 0.1, size: 70 },
-  { ox: 0.14, oy: 0.7, rot: -0.12, size: 66 },
+  { ox: -0.78, oy: 0.08, rot: -0.22, size: 76 },
+  { ox: 0.72, oy: 0.07, rot: 0.16, size: 82 },
+  { ox: -0.04, oy: 0.1, rot: 0.04, size: 74 },
+  { ox: -0.58, oy: 0.3, rot: 0.24, size: 72 },
+  { ox: 0.52, oy: 0.32, rot: -0.18, size: 76 },
+  { ox: -0.12, oy: 0.52, rot: 0.1, size: 68 },
+  { ox: 0.34, oy: 0.74, rot: -0.12, size: 64 },
 ] as const;
 
 const CREAM = "#f6f0e7";
@@ -116,7 +116,7 @@ function sample(layout: Layout, time: number): Model {
   const vodka = easeInOutCubic(invLerp(POUR.vodka.from, POUR.vodka.to, time));
   const lime = easeInOutCubic(invLerp(POUR.lime.from, POUR.lime.to, time));
   const ginger = easeInOutCubic(invLerp(POUR.ginger.from, POUR.ginger.to, time));
-  const fill = vodka * 0.18 + lime * 0.04 + ginger * 0.52;
+  const fill = vodka * 0.32 + lime * 0.05 + ginger * 0.5;
   const innerTop = layout.mugTop + 30;
   const innerBot = layout.mugBot - 24;
   return {
@@ -390,8 +390,9 @@ function drawIce(ctx: CanvasRenderingContext2D, layout: Layout, time: number): v
     const fall = easeOutBounce(clamp((time - at) / 0.58, 0, 1));
     const restY = lerp(innerBot, innerTop, cube.oy);
     const y = lerp(layout.mugTop - cube.size * 0.2, restY, fall);
-    const reach = halfWidth(layout, restY, layout.wall + cube.size * 0.45);
-    const x = layout.mugCx + cube.ox * reach + (fall > 0.92 ? wobble * (index % 2 === 0 ? 1 : -0.6) : 0);
+    const half = halfWidth(layout, restY, layout.wall + 12);
+    const limit = Math.max(16, half - cube.size * 0.36);
+    const x = layout.mugCx + cube.ox * limit + (fall > 0.92 ? wobble * (index % 2 === 0 ? 1 : -0.6) : 0);
     const rot = cube.rot + wobble * 0.012 * (index % 2 === 0 ? 1 : -1);
 
     ctx.save();
@@ -543,35 +544,41 @@ function addBottlePath(
 }
 
 function drawVodkaBottle(ctx: CanvasRenderingContext2D, level: number): void {
+  const neck = 32;
+  const body = 112;
+  const base = -(neck + body);
   ctx.save();
-  addBottlePath(ctx, 78, 168, 20, 42);
+  addBottlePath(ctx, 70, body, 18, neck);
   ctx.fillStyle = "rgba(255,255,255,0.08)";
   ctx.fill();
   ctx.save();
   ctx.clip();
-  const base = -42 - 168;
+  const liquidY = -level * (body + neck * 0.35);
   ctx.fillStyle = "rgba(206, 224, 232, 0.42)";
-  ctx.fillRect(-50, lerp(-50, base + 20, 1 - level), 100, 220);
+  ctx.fillRect(-46, liquidY, 92, -liquidY + 6);
   ctx.restore();
   ctx.strokeStyle = "rgba(255,255,255,0.72)";
   ctx.lineWidth = 2;
   ctx.stroke();
   ctx.fillStyle = "#f4efe8";
-  ctx.fillRect(-30, -132, 60, 58);
-  setType(ctx, 600, 12, "Outfit", "0.14em");
+  ctx.fillRect(-26, base + 36, 52, 44);
+  setType(ctx, 600, 11, "Outfit", "0.12em");
   ctx.fillStyle = INK;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText("VODKA", 0, -103);
+  ctx.fillText("VODKA", 0, base + 58);
   ctx.fillStyle = "#d7dde2";
-  ctx.fillRect(-22, -214, 44, 12);
+  ctx.fillRect(-16, base - 8, 32, 10);
   ctx.restore();
 }
 
 function drawGingerBottle(ctx: CanvasRenderingContext2D, level: number): void {
+  const neck = 28;
+  const body = 118;
+  const base = -(neck + body);
   ctx.save();
-  addBottlePath(ctx, 96, 176, 24, 36);
-  const glass = ctx.createLinearGradient(-48, 0, 48, 0);
+  addBottlePath(ctx, 84, body, 22, neck);
+  const glass = ctx.createLinearGradient(-42, 0, 42, 0);
   glass.addColorStop(0, "rgba(92, 42, 12, 0.35)");
   glass.addColorStop(0.35, "rgba(214, 140, 48, 0.28)");
   glass.addColorStop(1, "rgba(70, 30, 8, 0.4)");
@@ -579,12 +586,12 @@ function drawGingerBottle(ctx: CanvasRenderingContext2D, level: number): void {
   ctx.fill();
   ctx.save();
   ctx.clip();
-  const base = -36 - 176;
+  const liquidY = -level * (body + neck * 0.3);
   ctx.fillStyle = "rgba(176, 96, 24, 0.78)";
-  ctx.fillRect(-60, lerp(-46, base + 24, 1 - level), 120, 240);
+  ctx.fillRect(-50, liquidY, 100, -liquidY + 6);
   for (let i = 0; i < 5; i++) {
     ctx.beginPath();
-    ctx.arc(-20 + i * 10, -80 - (level * 40 + i * 12), 2.2, 0, Math.PI * 2);
+    ctx.arc(-18 + i * 9, base + 70 - i * 10, 2.1, 0, Math.PI * 2);
     ctx.fillStyle = "rgba(255, 220, 160, 0.45)";
     ctx.fill();
   }
@@ -593,15 +600,15 @@ function drawGingerBottle(ctx: CanvasRenderingContext2D, level: number): void {
   ctx.lineWidth = 2;
   ctx.stroke();
   ctx.fillStyle = "#f6f0e4";
-  ctx.fillRect(-36, -128, 72, 64);
-  setType(ctx, 600, 11, "Outfit", "0.08em");
+  ctx.fillRect(-32, base + 34, 64, 50);
+  setType(ctx, 600, 11, "Outfit", "0.06em");
   ctx.fillStyle = INK;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText("GINGER", 0, -108);
-  ctx.fillText("BEER", 0, -90);
+  ctx.fillText("GINGER", 0, base + 52);
+  ctx.fillText("BEER", 0, base + 68);
   ctx.fillStyle = "#1a120c";
-  ctx.fillRect(-26, -220, 52, 14);
+  ctx.fillRect(-20, base - 10, 40, 12);
   ctx.restore();
 }
 
@@ -689,32 +696,33 @@ function drawLime(ctx: CanvasRenderingContext2D, layout: Layout, model: Model, t
   const vis = propVisibility(time, POUR.lime.from, POUR.lime.to);
   if (vis < 0.02) return;
   const pour = model.lime;
-  const x = lerp(layout.mugCx - 220, layout.mugCx - 78, Math.min(1, vis * 1.2));
-  const y = lerp(layout.mugTop - 160, layout.mugTop - 78, Math.min(1, vis * 1.2));
+  const x = lerp(layout.mugCx - 180, layout.mugCx - 36, Math.min(1, vis * 1.2));
+  const y = lerp(layout.mugTop - 140, layout.mugTop - 58, Math.min(1, vis * 1.2));
   const squeeze = Math.sin(clamp(pour, 0, 1) * Math.PI);
   ctx.save();
   ctx.globalAlpha = clamp(vis * 1.5, 0, 1);
   ctx.translate(x, y);
-  ctx.rotate(-0.35);
-  ctx.scale(1 + squeeze * 0.08, 1 - squeeze * 0.16);
+  ctx.rotate(0.08);
+  ctx.scale(1.35 + squeeze * 0.08, 1.35 - squeeze * 0.22);
   drawLimeHalf(ctx);
   ctx.restore();
 
   if (pour <= 0.02 || pour >= 0.99 || vis < 0.8) return;
-  const impactX = layout.mugCx - 10;
+  const impactX = layout.mugCx - 6;
   const impactY = model.surfaceY;
-  for (let i = 0; i < 8; i++) {
-    const birth = POUR.lime.from + 0.08 + i * 0.26;
-    const age = (time - birth) / 0.36;
+  drawStream(ctx, x, y + 6, impactX, impactY, 4.5, time, "rgba(176, 204, 64, 0.82)");
+  for (let i = 0; i < 12; i++) {
+    const birth = POUR.lime.from + 0.05 + i * 0.18;
+    const age = (time - birth) / 0.5;
     if (age < 0 || age > 1) continue;
-    const arc = age;
-    const px = lerp(x, impactX, arc) + Math.sin(arc * Math.PI) * (18 + i * 2);
-    const py = lerp(y + 8, impactY, arc) - Math.sin(arc * Math.PI) * 16;
+    const px = lerp(x, impactX, age) + Math.sin(age * Math.PI) * (10 + (i % 4) * 6);
+    const py = lerp(y + 10, impactY, age);
     ctx.beginPath();
-    ctx.arc(px, py, lerp(3.4, 1.3, arc), 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(186, 210, 70, ${0.95 - arc * 0.2})`;
+    ctx.arc(px, py, lerp(4.2, 1.6, age), 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(186, 210, 70, ${0.95 - age * 0.15})`;
     ctx.fill();
   }
+  drawRipples(ctx, impactX, impactY, halfWidth(layout, impactY, layout.wall), time);
   drawLeader(ctx, layout, x, y);
 }
 
@@ -769,24 +777,36 @@ function drawSpoon(ctx: CanvasRenderingContext2D, layout: Layout, model: Model, 
   if (stir <= 0 || stir >= 1) return;
   const fade = Math.sin(stir * Math.PI);
   const angle = stir * Math.PI * 2;
-  const x = layout.mugCx + Math.cos(angle) * 36;
-  const y = model.surfaceY + 28;
+  const x = layout.mugCx + Math.cos(angle) * 28;
+  const y = model.surfaceY + 36;
+  const handleX = layout.mugCx + 150;
+  const handleY = layout.mugTop - 28;
   ctx.save();
   ctx.globalAlpha = fade;
   ctx.lineCap = "round";
-  ctx.strokeStyle = "#e7edf1";
-  ctx.lineWidth = 5;
+  ctx.strokeStyle = "#c5ced6";
+  ctx.lineWidth = 8;
   ctx.beginPath();
   ctx.moveTo(x, y);
-  ctx.quadraticCurveTo(layout.mugCx + 150, layout.mugTop - 30, layout.mugCx + 230, layout.mugTop - 120);
+  ctx.lineTo(handleX, handleY);
+  ctx.stroke();
+  ctx.strokeStyle = "rgba(255,255,255,0.55)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(x + 2, y - 4);
+  ctx.lineTo(handleX - 4, handleY + 6);
   ctx.stroke();
   ctx.beginPath();
-  ctx.ellipse(x, y + 10, 14, 22, Math.sin(angle) * 0.3, 0, Math.PI * 2);
-  ctx.fillStyle = "#f4f7f8";
+  ctx.ellipse(x, y + 8, 16, 26, Math.sin(angle) * 0.25, 0, Math.PI * 2);
+  ctx.fillStyle = "#f7fafc";
   ctx.fill();
-  ctx.strokeStyle = "rgba(40, 50, 58, 0.35)";
-  ctx.lineWidth = 1.5;
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "#9aa7b2";
   ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(handleX, handleY, 7, 0, Math.PI * 2);
+  ctx.fillStyle = "#eef3f6";
+  ctx.fill();
   ctx.restore();
 }
 
@@ -799,7 +819,7 @@ function drawGarnish(ctx: CanvasRenderingContext2D, layout: Layout, time: number
   ctx.save();
   ctx.translate(restX, y);
   ctx.rotate(lerp(-0.8, 0.42, drop));
-  drawLimeWheel(ctx, 36);
+  drawLimeWheel(ctx, 44);
   ctx.restore();
 }
 
@@ -1164,8 +1184,7 @@ function drawVignette(ctx: CanvasRenderingContext2D, layout: Layout): void {
 function drawMug(ctx: CanvasRenderingContext2D, layout: Layout, model: Model, time: number): void {
   const intro = easeOutCubic(clamp(time / 1.15, 0, 1));
   ctx.save();
-  ctx.translate(0, lerp(36, 0, intro));
-  ctx.globalAlpha = intro;
+  ctx.translate(0, lerp(22, 0, intro));
 
   ctx.save();
   ctx.filter = "blur(16px)";

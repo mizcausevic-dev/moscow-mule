@@ -131,11 +131,13 @@ h1 {
   height: 74px;
   border-radius: 50%;
   border: 1.5px solid var(--copper);
-  background:
-    linear-gradient(90deg, transparent 42%, var(--cream) 42% 70%, transparent 70%) center / 18px 22px no-repeat,
-    rgba(20, 14, 11, 0.72);
+  background: rgba(20, 14, 11, 0.72);
   box-shadow: 0 0 0 10px rgba(224, 163, 106, 0.12);
+  display: grid;
+  place-items: center;
 }
+
+.play-mark svg { margin-left: 3px; }
 
 .curtain-title {
   font-family: Fraunces, Georgia, serif;
