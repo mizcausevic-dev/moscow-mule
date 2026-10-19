@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A 30-second cutaway motion graphic that builds an IBA Moscow Mule from an empty mule cup to the finished drink."
+    />
+    <title>Moscow Mule, a 30-second build</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">Recipe motion graphic</p>
+        <h1>Moscow Mule</h1>
+        <p class="deck">
+          Empty mule cup to finished drink, in 30 seconds. The measures on screen are the IBA spec.
+        </p>
+      </header>
+
+      <div id="stage">
+        <canvas id="frame" aria-label="Animated cutaway of a Moscow Mule being built, from an empty cup to the finished drink"></canvas>
+        <button id="curtain" type="button">
+          <span class="play-mark" aria-hidden="true"></span>
+          <span class="curtain-title">Play the build</span>
+          <span class="curtain-sub">0:30. Sound stays off until you turn it on.</span>
+        </button>
+      </div>
+
+      <div class="player" role="group" aria-label="Playback">
+        <button id="play" type="button">Play</button>
+        <button id="restart" type="button">Restart</button>
+        <label class="scrub">
+          <span class="sr">Seek</span>
+          <input id="scrub" type="range" min="0" max="30" step="0.01" value="0" />
+        </label>
+        <span id="clock">0:00 / 0:30</span>
+        <button id="mute" type="button" aria-pressed="true">Sound off</button>
+        <button id="save" type="button">Save WebM</button>
+      </div>
+      <p id="status" role="status"></p>
+      <div class="chapters" id="chapters" aria-label="Recipe steps"></div>
+
+      <section class="recipe" aria-labelledby="recipe-heading">
+        <h2 id="recipe-heading">What goes in the cup</h2>
+        <ul>
+          <li><span>Vodka</span><span>45 ml, 1 1/2 oz</span></li>
+          <li><span>Fresh lime juice</span><span>10 ml, 1/3 oz</span></li>
+          <li><span>Ginger beer</span><span>120 ml, 4 oz</span></li>
+          <li><span>Lime slice</span><span>1, on the rim</span></li>
+          <li><span>Ice</span><span>fill the mule cup</span></li>
+        </ul>
+        <p>
+          The mug is drawn as a cutaway so the fill stays visible. Ounce labels use a 30 ml bar ounce.
+          The IBA lists 45 ml vodka, 10 ml fresh lime juice, and 120 ml ginger beer, and its page names Smirnoff as the vodka.
+          The published method combines the vodka and ginger beer, then adds the lime juice, stirs gently, and finishes with a lime slice.
+          This picture pours the ginger beer last so the carbonation and the color change stay readable. Same measures.
+        </p>
+        <p><a href="https://iba-world.com/iba-cocktail/moscow-mule/">IBA Moscow Mule</a></p>
+      </section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
